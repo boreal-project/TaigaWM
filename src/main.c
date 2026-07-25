@@ -127,16 +127,6 @@ int main(int argc, char **argv) {
     // Load the config as the first thing we do
     load_config();
 
-    // set the xkb env vars for the keyboard layout and whatnot
-    if (xkb_config.layout != NULL) {
-        fprintf(stdout, "INFO: Loading layout: %s\n", xkb_config.layout);
-        setenv("XKB_DEFAULT_LAYOUT", xkb_config.layout, 1);
-    }
-    if (xkb_config.variant != NULL) {
-        fprintf(stdout, "INFO: Loading variant: %s\n", xkb_config.variant);
-        setenv("XKB_DEFAULT_VARIANT", xkb_config.variant, 1);
-    }
-
     // if the env var TAIGA_WRAPPED is set, we are running inside river
     if (getenv("TAIGA_WRAPPED") != NULL) {
         compositor_main();

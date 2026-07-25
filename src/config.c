@@ -425,7 +425,7 @@ char *locate_config(void) {
     char *config_locations[] = {
         ".config/taiga/taigarc.lua",
         ".taigarc.lua",
-        "/usr/share/taigarc.lua",
+        "/etc/taiga/taigarc.lua",
     };
 
     // get len
@@ -539,15 +539,18 @@ int load_config(void) {
     char *layout = get_string_from_var_from_table(config_path, "Xkb", "layout");
     char *variant =
         get_string_from_var_from_table(config_path, "Xkb", "variant");
+    char *options = get_string_from_var_from_table(config_path, "Xkb", "options");
 
     if (xkb_config.layout) {
         free(xkb_config.layout);
-    }
-    if (xkb_config.variant) {
+    } if (xkb_config.variant) {
         free(xkb_config.variant);
+    } if (xkb_config.options) {
+        free(xkb_config.options);
     }
     xkb_config.layout = layout;
     xkb_config.variant = variant;
+    xkb_config.options = options;
 
     // misc
     bool tearing = get_bool_from_var_from_table(config_path, "Misc", "tearing");

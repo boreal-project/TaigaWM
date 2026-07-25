@@ -50,6 +50,7 @@ generated = wl_mod.scan_xml(
   'protocol/river-layer-shell-v1.xml',
   'protocol/river-libinput-config-v1.xml',
   'protocol/river-input-management-v1.xml',
+  'protocol/river-xkb-config-v1.xml',
 )
 
 inc = include_directories('include')
@@ -57,6 +58,11 @@ inc = include_directories('include')
 install_data(
   'TaigaWM.desktop',
   install_dir: '/usr/share/wayland-sessions',
+)
+
+install_data(
+  'taigarc.lua',
+  install_dir: '/etc/taiga'
 )
 
 exe = executable(

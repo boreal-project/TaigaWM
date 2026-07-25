@@ -3,6 +3,7 @@
 #include <river-layer-shell-v1-client-protocol.h>
 #include <river-libinput-config-v1-client-protocol.h>
 #include <river-window-management-v1-client-protocol.h>
+#include <river-xkb-config-v1-client-protocol.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -194,6 +195,10 @@ void handle_global(void *data, struct wl_registry *registry, uint32_t name,
             calloc(1, sizeof(struct RiverInputDevice));
         river_input_manager_v1_add_listener(
             river_input_manager, &river_input_manager_listener, rdevice);
+    } else if (strcmp(interface, river_xkb_config_v1_interface.name) == 0) {
+        xkb_context = xkb_context_new(XKB_CONTEXT_NO_FLAGS);
+        river_xkb_config = wl_registry_bind(registry, name, &river_xkb_config_v1_interface, 1);
+        river_xkb_config_v1_add_listener(river_xkb_config, &river_xkb_config_listener, NULL);
     }
 }
 

@@ -31,6 +31,7 @@ struct InputConfig {
 struct XkbConfig {
     char *layout;
     char *variant;
+    char *options;
 };
 
 struct MiscConfig {
