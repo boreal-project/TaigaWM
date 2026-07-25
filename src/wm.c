@@ -197,8 +197,10 @@ void handle_global(void *data, struct wl_registry *registry, uint32_t name,
             river_input_manager, &river_input_manager_listener, rdevice);
     } else if (strcmp(interface, river_xkb_config_v1_interface.name) == 0) {
         xkb_context = xkb_context_new(XKB_CONTEXT_NO_FLAGS);
-        river_xkb_config = wl_registry_bind(registry, name, &river_xkb_config_v1_interface, 1);
-        river_xkb_config_v1_add_listener(river_xkb_config, &river_xkb_config_listener, NULL);
+        river_xkb_config =
+            wl_registry_bind(registry, name, &river_xkb_config_v1_interface, 1);
+        river_xkb_config_v1_add_listener(river_xkb_config,
+                                         &river_xkb_config_listener, NULL);
     }
 }
 

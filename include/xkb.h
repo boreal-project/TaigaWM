@@ -26,8 +26,10 @@ extern struct xkb_context *xkb_context;
 extern struct river_xkb_config_v1 *river_xkb_config;
 extern const struct river_xkb_config_v1_listener river_xkb_config_listener;
 
-void river_xkb_config_handle_finished(void *data, struct river_xkb_config_v1 *config);
-void river_xkb_config_handle_xkb_keyboard(void * data, struct river_xkb_config_v1 *config,
+void river_xkb_config_handle_finished(void *data,
+                                      struct river_xkb_config_v1 *config);
+void river_xkb_config_handle_xkb_keyboard(void *data,
+                                          struct river_xkb_config_v1 *config,
                                           struct river_xkb_keyboard_v1 *id);
 
 extern struct river_xkb_bindings_v1 *xkb_bindings_v1;

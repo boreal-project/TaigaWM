@@ -539,13 +539,16 @@ int load_config(void) {
     char *layout = get_string_from_var_from_table(config_path, "Xkb", "layout");
     char *variant =
         get_string_from_var_from_table(config_path, "Xkb", "variant");
-    char *options = get_string_from_var_from_table(config_path, "Xkb", "options");
+    char *options =
+        get_string_from_var_from_table(config_path, "Xkb", "options");
 
     if (xkb_config.layout) {
         free(xkb_config.layout);
-    } if (xkb_config.variant) {
+    }
+    if (xkb_config.variant) {
         free(xkb_config.variant);
-    } if (xkb_config.options) {
+    }
+    if (xkb_config.options) {
         free(xkb_config.options);
     }
     xkb_config.layout = layout;
