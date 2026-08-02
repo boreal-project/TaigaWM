@@ -18,6 +18,8 @@
 void seat_handle_removed(void *data, struct river_seat_v1 *obj) {
     (void)obj;
 
+    fprintf(stdout, "seat_handle_removed\n");
+
     struct Seat *seat = data;
     seat->removed = true;
 }
@@ -26,12 +28,16 @@ void seat_handle_pointer_enter(void *data, struct river_seat_v1 *obj,
                                struct river_window_v1 *river_window) {
     (void)obj;
 
+    fprintf(stdout, "seat_handle_pointer_enter\n");
+
     struct Seat *seat = data;
     seat->hovered = river_window_v1_get_user_data(river_window);
 }
 
 void seat_handle_pointer_leave(void *data, struct river_seat_v1 *obj) {
     (void)obj;
+
+    fprintf(stdout, "seat_handle_pointer_leave\n");
 
     struct Seat *seat = data;
     seat->hovered = NULL;
@@ -41,6 +47,8 @@ void seat_handle_window_interaction(void *data, struct river_seat_v1 *obj,
                                     struct river_window_v1 *river_window) {
     (void)obj;
 
+    fprintf(stdout, "seat_handle_window_interaction\n");
+
     struct Seat *seat = data;
     seat->interacted = river_window_v1_get_user_data(river_window);
 }
@@ -48,6 +56,8 @@ void seat_handle_window_interaction(void *data, struct river_seat_v1 *obj,
 void seat_handle_op_delta(void *data, struct river_seat_v1 *obj, int32_t dx,
                           int32_t dy) {
     (void)obj;
+
+    fprintf(stdout, "seat_handle_op_delta\n");
 
     struct Seat *seat = data;
     seat->op_dx = dx;
@@ -57,12 +67,14 @@ void seat_handle_op_delta(void *data, struct river_seat_v1 *obj, int32_t dx,
 void seat_handle_op_release(void *data, struct river_seat_v1 *obj) {
     (void)obj;
 
+    fprintf(stdout, "seat_handle_op_release\n");
+
     struct Seat *seat = data;
     seat->op_release = true;
 }
 
 void handle_focused_output_change(struct Seat *seat) {
-    fprintf(stdout, "INFO: Changing default layer shell output.\n");
+    fprintf(stdout, "handle_focused_output_change\n");
     river_layer_shell_output_v1_set_default(
         seat->focused_output->layer_shell_output);
 }
@@ -70,6 +82,8 @@ void handle_focused_output_change(struct Seat *seat) {
 void seat_handle_pointer_position(void *data, struct river_seat_v1 *obj,
                                   int32_t x, int32_t y) {
     (void)obj;
+
+    fprintf(stdout, "seat_handle_pointer_position\n");
 
     struct Seat *seat = data;
     seat->cur_ptr_posx = x;
@@ -81,7 +95,6 @@ void seat_handle_pointer_position(void *data, struct river_seat_v1 *obj,
     if (new_output != old_output) {
         seat->focused_output = new_output;
         if (new_output != NULL) {
-            fprintf(stdout, "INFO: Focused output changed.\n");
             handle_focused_output_change(seat);
         }
     }
@@ -110,6 +123,8 @@ void seat_maybe_destroy(struct Seat *seat) {
         return;
     }
 
+    fprintf(stdout, "seat_maybe_destroy\n");
+
     struct XkbBinding *xkb_binding, *xkb_binding_tmp;
     wl_list_for_each_safe(xkb_binding, xkb_binding_tmp, &seat->xkb_bindings,
                           link) {
@@ -128,6 +143,8 @@ void seat_maybe_destroy(struct Seat *seat) {
 }
 
 void seat_focus(struct Seat *seat, struct Window *window) {
+    fprintf(stdout, "seat_focus\n");
+
     // if no window is specified (usually on close)
     // try to find the first window on the same tag and output
     // fallback to last focused window
@@ -167,6 +184,8 @@ void seat_focus(struct Seat *seat, struct Window *window) {
 }
 
 void seat_pointer_move(struct Seat *seat, struct Window *window) {
+    fprintf(stdout, "seat_pointer_move\n");
+
     seat_focus(seat, window);
     river_seat_v1_op_start_pointer(seat->obj);
     seat->op = SEAT_OP_MOVE;
@@ -179,6 +198,8 @@ void seat_pointer_move(struct Seat *seat, struct Window *window) {
 
 void seat_pointer_resize(struct Seat *seat, struct Window *window,
                          uint32_t edges) {
+    fprintf(stdout, "seat_pointer_resize\n");
+
     seat_focus(seat, window);
     river_window_v1_inform_resize_start(window->obj);
     river_seat_v1_op_start_pointer(seat->obj);
@@ -194,6 +215,8 @@ void seat_pointer_resize(struct Seat *seat, struct Window *window,
 }
 
 void seat_action(struct Seat *seat, enum Action action) {
+    fprintf(stdout, "seat_action\n");
+
     struct Output *tmp_output = get_focused_output();
     struct Window *tmp_window;
 
@@ -242,10 +265,8 @@ void seat_action(struct Seat *seat, enum Action action) {
     case ACTION_FULLSCREEN:
         if (tmp_window != NULL && tmp_output != NULL) {
             if (tmp_window->fullscreen) {
-                fprintf(stdout, "INFO: Leaving fullscreen\n");
                 seat_exit_fullscreen(tmp_window);
             } else {
-                fprintf(stdout, "INFO: Entering fullscreen\n");
                 seat_enter_fullscreen(tmp_window, tmp_output);
             }
         }
@@ -299,18 +320,19 @@ void seat_action(struct Seat *seat, enum Action action) {
 }
 
 static void fallback_pointerbinds(struct Seat *seat) {
-    // Set the fallback pointer binds
+    fprintf(stdout, "fallback_pointerbinds\n");
 
-    fprintf(stderr, "WARNING: falling back to sane default pointer binds.\n");
+    // Set the fallback pointer binds
     const uint32_t super = RIVER_SEAT_V1_MODIFIERS_MOD4;
     pointer_binding_create(seat, super, BTN_LEFT, ACTION_MOVE);
     pointer_binding_create(seat, super, BTN_RIGHT, ACTION_RESIZE);
 }
 
 static void fallback_keybinds(struct Seat *seat) {
-    // Set the fallback key binds
 
-    fprintf(stderr, "WARNING: falling back to sane default keybinds.\n");
+    fprintf(stderr, "fallback_keybinds\n");
+
+    // Set the fallback key binds
     const uint32_t super = RIVER_SEAT_V1_MODIFIERS_MOD4;
     xkb_binding_create(seat, super, XKB_KEY_Return, ACTION_SPAWN_SH, "foot");
     xkb_binding_create(seat, super, XKB_KEY_d, ACTION_SPAWN_SH,
@@ -321,6 +343,8 @@ static void fallback_keybinds(struct Seat *seat) {
 }
 
 void seat_handle_new(struct Seat *seat) {
+    fprintf(stdout, "seat_handle_new\n");
+
     seat->new = false;
 
     // destroy all keybinds first if they exist
@@ -340,8 +364,6 @@ void seat_handle_new(struct Seat *seat) {
     // set pointer bindings
     if (keybind_config.keybinds != NULL) {
         for (size_t i = 0; i < keybind_config.keybinds_len; i++) {
-            fprintf(stdout, "INFO: Adding keybind str: %s\n",
-                    keybind_config.keybinds[i]);
             parse_and_add_keybind(keybind_config.keybinds[i], seat);
             free(keybind_config.keybinds[i]);
         }
@@ -364,13 +386,9 @@ void seat_handle_new(struct Seat *seat) {
 
     if (misc_config.xcursor_theme != NULL) {
         if (misc_config.xcursor_size <= 0) {
-            fprintf(
-                stdout,
-                "WARNING: Xcursor size not specified, falling back to 24.\n");
+            fprintf(stdout, "warn: falling back to xcursor_size = 24\n");
             misc_config.xcursor_size = 24;
         }
-        fprintf(stdout, "INFO: Setting Xcursor theme: %s size: %d\n",
-                misc_config.xcursor_theme, misc_config.xcursor_size);
         river_seat_v1_set_xcursor_theme(seat->obj, misc_config.xcursor_theme,
                                         misc_config.xcursor_size);
     }
@@ -380,6 +398,8 @@ void seat_handle_new(struct Seat *seat) {
 }
 
 void seat_manage(struct Seat *seat) {
+    fprintf(stdout, "seat_manage\n");
+
     if (seat->new) {
         seat_handle_new(seat);
     }
@@ -445,6 +465,8 @@ void seat_manage(struct Seat *seat) {
 }
 
 void seat_render(struct Seat *seat) {
+    fprintf(stdout, "seat_render\n");
+
     // Move and resize stuff, river did this for us.
     switch (seat->op) {
     case SEAT_OP_NONE:

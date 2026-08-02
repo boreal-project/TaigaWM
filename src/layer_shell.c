@@ -26,6 +26,8 @@ void layer_shell_handle_focus_none(void *data,
     (void)data;
     (void)seat;
 
+    fprintf(stdout, "layer_shell_handle_focus_none\n");
+
     struct Seat *s, *s_tmp;
     wl_list_for_each_safe(s, s_tmp, &wm.seats, link) { s->focused = NULL; }
 }
@@ -34,6 +36,8 @@ void layer_shell_handle_non_exclusive_area(
     void *data, struct river_layer_shell_output_v1 *output, int x, int y,
     int width, int height) {
     (void)output;
+
+    fprintf(stdout, "layer_shell_handle_non_exclusive_area\n");
 
     struct Output *tmp_output = data;
 

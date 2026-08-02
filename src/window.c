@@ -52,6 +52,8 @@ const struct river_window_v1_listener river_window_listener = {
 void window_handle_closed(void *data, struct river_window_v1 *obj) {
     (void)obj;
 
+    fprintf(stdout, "window_handle_closed\n");
+
     struct Window *window = data;
     window->closed = true;
 }
@@ -59,6 +61,8 @@ void window_handle_closed(void *data, struct river_window_v1 *obj) {
 void window_handle_dimensions(void *data, struct river_window_v1 *obj,
                               int32_t width, int32_t height) {
     (void)obj;
+
+    fprintf(stdout, "window_handle_dimensions\n");
 
     struct Window *window = data;
     window->width = width;
@@ -70,6 +74,8 @@ void window_handle_pointer_move_requested(void *data,
                                           struct river_seat_v1 *river_seat) {
     (void)obj;
 
+    fprintf(stdout, "window_handle_pointer_move_requested\n");
+
     struct Window *window = data;
     window->pointer_move_requested = river_seat_v1_get_user_data(river_seat);
 }
@@ -80,24 +86,30 @@ void window_handle_pointer_resize_requested(void *data,
                                             uint32_t edges) {
     (void)obj;
 
+    fprintf(stdout, "window_handle_pointer_resize_requested\n");
+
     struct Window *window = data;
     window->pointer_resize_requested = river_seat_v1_get_user_data(river_seat);
     window->pointer_resize_requested_edges = edges;
 }
 
 void seat_enter_fullscreen(struct Window *window, struct Output *output) {
+    fprintf(stdout, "seat_enter_fullscreen\n");
     window_handle_fullscreen_requested(window, window->obj, output->obj);
 }
 
 void seat_exit_fullscreen(struct Window *window) {
+    fprintf(stdout, "seat_exit_fullscreen\n");
     window_handle_exit_fullscreen_requested(window, window->obj);
 }
 
 void seat_maximize(struct Window *window) {
+    fprintf(stdout, "seat_maximize\n");
     window_handle_maximize_requested(window, window->obj);
 }
 
 void seat_unmaximize(struct Window *window) {
+    fprintf(stdout, "seat_unmaximize\n");
     window_handle_unmaximize_requested(window, window->obj);
 }
 
@@ -105,6 +117,8 @@ void window_handle_fullscreen_requested(void *data, struct river_window_v1 *obj,
                                         struct river_output_v1 *river_output) {
     (void)obj;
     (void)river_output;
+
+    fprintf(stdout, "window_handle_fullscreen_requested\n");
 
     struct Window *window = data;
     if (window->maximized) {
@@ -128,6 +142,8 @@ void window_handle_exit_fullscreen_requested(void *data,
                                              struct river_window_v1 *obj) {
     (void)obj;
 
+    fprintf(stdout, "window_handle_exit_fullscreen_requested\n");
+
     struct Window *window = data;
     window->fullscreen = false;
 
@@ -143,6 +159,8 @@ void window_handle_exit_fullscreen_requested(void *data,
 
 void window_handle_maximize_requested(void *data, struct river_window_v1 *obj) {
     (void)obj;
+
+    fprintf(stdout, "window_handle_maximize_requested\n");
 
     struct Window *window = data;
     if (window->fullscreen) {
@@ -167,6 +185,8 @@ void window_handle_maximize_requested(void *data, struct river_window_v1 *obj) {
 void window_handle_unmaximize_requested(void *data,
                                         struct river_window_v1 *obj) {
     (void)obj;
+
+    fprintf(stdout, "window_handle_unmaximize_requested\n");
 
     struct Seat *seat = wl_container_of(wm.seats.next, seat, link);
     struct Window *window = data;
@@ -209,6 +229,8 @@ void window_maybe_destroy(struct Window *window) {
         return;
     }
 
+    fprintf(stdout, "window_maybe_destroy\n");
+
     struct Seat *seat;
     wl_list_for_each(seat, &wm.seats, link) {
         if (seat->focused == window) {
@@ -227,12 +249,16 @@ void window_maybe_destroy(struct Window *window) {
 }
 
 void window_set_position(struct Window *window, int32_t x, int32_t y) {
+    fprintf(stdout, "window_set_position\n");
+
     river_node_v1_set_position(window->node, x, y);
     window->x = x;
     window->y = y;
 }
 
 void set_borders(struct Window *window) {
+    fprintf(stdout, "set_borders\n");
+
     uint32_t fr, fg, fb, fa;
     uint32_t ufr, ufg, ufb, ufa;
 
@@ -254,6 +280,8 @@ void set_borders(struct Window *window) {
 }
 
 void tag_focus_first_window(struct Output *output) {
+    fprintf(stdout, "tag_focus_first_window\n");
+
     struct Window *tmp_window;
     struct Seat *seat = wl_container_of(wm.seats.next, seat, link);
     seat->focused = NULL;
@@ -266,40 +294,55 @@ void tag_focus_first_window(struct Output *output) {
 }
 
 void output_inc_tag(struct Output *output) {
+    fprintf(stdout, "output_inc_tag\n");
+
     output->tag_id++;
     tag_focus_first_window(output);
 }
 
 void output_dec_tag(struct Output *output) {
     if (output->tag_id <= 0) {
-        fprintf(stdout, "INFO: output tag at 0\n");
         return;
     }
+
+    fprintf(stdout, "output_dec_tag\n");
+
     output->tag_id--;
     tag_focus_first_window(output);
 }
 
-void window_inc_tag(struct Window *window) { window->tag_id++; }
+void window_inc_tag(struct Window *window) {
+    fprintf(stdout, "window_inc_tag\n");
+
+    window->tag_id++;
+}
 
 void window_dec_tag(struct Window *window) {
     if (window->tag_id <= 0) {
-        fprintf(stdout, "INFO: win at 0\n");
         return;
     }
+
+    fprintf(stdout, "window_dec_tag\n");
 
     window->tag_id--;
 }
 
 void output_set_tag(struct Output *output, uint32_t tag) {
+    fprintf(stdout, "output_set_tag\n");
+
     output->tag_id = tag;
     tag_focus_first_window(output);
 }
 
 void window_set_tag(struct Window *window, uint32_t tag) {
+    fprintf(stdout, "window_set_tag\n");
+
     window->tag_id = tag;
 }
 
 void window_manage(struct Window *window) {
+    fprintf(stdout, "window_manage\n");
+
     if (window->new) {
         window->new = false;
         struct Output *output = get_focused_output();
@@ -307,10 +350,8 @@ void window_manage(struct Window *window) {
                             output->posy + output->height / 5);
         river_window_v1_propose_dimensions(window->obj, 0, 0);
         if (misc_config.client_side_decorations) {
-            fprintf(stdout, "INFO: Enabling CSD.\n");
             river_window_v1_use_csd(window->obj);
         } else {
-            fprintf(stdout, "INFO: Enabling SSD.\n");
             river_window_v1_use_ssd(window->obj);
         }
         window->output = output;

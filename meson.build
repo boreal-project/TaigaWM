@@ -15,6 +15,7 @@ cc = meson.get_compiler('c')
 add_project_arguments(cc.get_supported_arguments([
   '-D_POSIX_C_SOURCE=200809L',
 	'-Wno-unused-parameter',
+        '-O2',
 ]), language: 'c')
 
 wayland_client = dependency('wayland-client')

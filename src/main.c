@@ -18,6 +18,7 @@
 
 static volatile sig_atomic_t config_changed = 0;
 static void setup_inotify(void) {
+    fprintf(stdout, "setup_inotify\n");
     // Fork and wait for config changed
     // On config change send sig handler and exit
 
@@ -57,6 +58,7 @@ static void setup_inotify(void) {
 static void handle_config_change(int sig) { config_changed = 1; }
 
 static int compositor_main(void) {
+    fprintf(stdout, "compositor_main\n");
     // Sig magic
     struct sigaction sa = {0};
     sa.sa_handler = handle_config_change;
@@ -66,7 +68,7 @@ static int compositor_main(void) {
     // Connect to display
     struct wl_display *display = wl_display_connect(NULL);
     if (display == NULL) {
-        fprintf(stderr, "ERROR: failed to connect to Wayland server.\n");
+        fprintf(stderr, "err: failed to connect to Wayland server.\n");
         return 1;
     }
 
@@ -79,14 +81,14 @@ static int compositor_main(void) {
     struct wl_registry *registry = wl_display_get_registry(display);
     wl_registry_add_listener(registry, &registry_listener, NULL);
     if (wl_display_roundtrip(display) < 0) {
-        fprintf(stderr, "ERROR: roundtrip failed.\n");
+        fprintf(stderr, "err: roundtrip failed.\n");
         return 1;
     }
 
     // Check that the compositor is river compatible / is river
     if (window_manager_v1 == NULL || xkb_bindings_v1 == NULL ||
         layer_shell == NULL) {
-        fprintf(stderr, "ERROR: compositor is not river compatible.\n");
+        fprintf(stderr, "err: compositor is not river compatible.\n");
         return 1;
     }
 
@@ -96,7 +98,6 @@ static int compositor_main(void) {
     river_window_manager_v1_add_listener(window_manager_v1, &wm_listener, NULL);
 
     // Execute the autostarts in the main function, cuz it only runs once
-    fprintf(stdout, "INFO: Executing autostarts.\n");
     if (autostart_config.autostarts != NULL) {
         autostart(autostart_config.autostarts, autostart_config.autostarts_len);
     }
@@ -107,13 +108,13 @@ static int compositor_main(void) {
             if (errno == EINTR) {
                 continue;
             }
-            fprintf(stderr, "ERROR: dispatch failed\n");
+            fprintf(stderr, "err: dispatch failed\n");
             return 1;
         }
 
         // If the config changes set seat_new for all, then setup inotify again
         if (config_changed) {
-            fprintf(stdout, "INFO: config file changed, Reloading.\n");
+            fprintf(stdout, "config_changed\n");
             config_changed = 0;
             struct Seat *seat;
             wl_list_for_each(seat, &wm.seats, link) { seat->new = true; }
@@ -139,7 +140,7 @@ int main(int argc, char **argv) {
         len = readlink("/proc/self/exe", exe_path, sizeof(exe_path) - 1);
         // if we fail, abort
         if (len <= 0) {
-            fprintf(stderr, "ERROR: failed to read /proc/self/exe.\n");
+            fprintf(stderr, "err: failed to read /proc/self/exe.\n");
             return 1;
         }
         exe_path[len] = '\0';

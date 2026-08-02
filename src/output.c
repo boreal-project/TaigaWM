@@ -17,7 +17,7 @@ const struct river_output_v1_listener river_output_listener = {
 void output_handle_removed(void *data, struct river_output_v1 *obj) {
     (void)obj;
 
-    fprintf(stdout, "INFO: Output removed.\n");
+    fprintf(stdout, "output_handle_removed\n");
     struct Output *output = data;
     output->removed = true;
 }
@@ -27,7 +27,7 @@ void output_maybe_destroy(struct Output *output) {
         return;
     }
 
-    fprintf(stdout, "INFO: Output destroyed.\n");
+    fprintf(stdout, "output_maybe_destroy\n");
     river_output_v1_destroy(output->obj);
     wl_list_remove(&output->link);
     free(output);
@@ -37,7 +37,7 @@ void output_handle_dimensions(void *data, struct river_output_v1 *obj,
                               int32_t width, int32_t height) {
     (void)obj;
 
-    fprintf(stdout, "INFO: Output dimensions = %dx%d.\n", width, height);
+    fprintf(stdout, "output_handle_dimensions: %dx%d.\n", width, height);
 
     struct Output *output = data;
     output->width = width;
@@ -50,20 +50,22 @@ void output_handle_wl_output(void *data, struct river_output_v1 *obj,
     (void)obj;
     (void)name;
 
-    fprintf(stdout, "INFO: New wl_output.\n");
+    fprintf(stdout, "output_handle_wl_output\n");
 }
 
 void output_handle_position(void *data, struct river_output_v1 *obj, int32_t x,
                             int32_t y) {
     (void)obj;
 
-    fprintf(stdout, "INFO: Output position = %dx%d.\n", x, y);
+    fprintf(stdout, "output_handle_position: %dx%d.\n", x, y);
     struct Output *output = data;
     output->posx = x;
     output->posy = y;
 }
 
 struct Output *get_focused_output(void) {
+    fprintf(stdout, "get_focused_output\n");
+
     if (wl_list_empty(&wm.seats)) {
         return NULL;
     }
@@ -88,6 +90,8 @@ struct Output *get_focused_output(void) {
 }
 
 struct Output *get_output_at_position(int x, int y) {
+    fprintf(stdout, "get_output_at_position\n");
+
     struct Output *output;
     wl_list_for_each(output, &wm.outputs, link) {
         if (x >= output->posx && x < output->posx + output->width &&
@@ -99,6 +103,8 @@ struct Output *get_output_at_position(int x, int y) {
 }
 
 void focus_first_window_on_output(struct Output *output) {
+    fprintf(stdout, "focus_first_window_on_output\n");
+
     struct Window *tmp_window;
     struct Seat *seat = wl_container_of(wm.seats.next, seat, link);
 
@@ -112,6 +118,8 @@ void focus_first_window_on_output(struct Output *output) {
 }
 
 void focus_mon_next(void) {
+    fprintf(stdout, "focus_mon_next\n");
+
     struct Seat *seat = wl_container_of(wm.seats.next, seat, link);
     struct Output *tmp_output;
     struct Output *focused_output = get_focused_output();
@@ -127,6 +135,8 @@ void focus_mon_next(void) {
 }
 
 void focus_mon_prev(void) {
+    fprintf(stdout, "focus_mon_prev\n");
+
     struct Seat *seat = wl_container_of(wm.seats.next, seat, link);
     struct Output *tmp_output;
     struct Output *focused_output = get_focused_output();

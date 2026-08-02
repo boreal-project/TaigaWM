@@ -23,7 +23,7 @@ void river_input_device_handle_removed(void *data,
                                        struct river_input_device_v1 *device) {
     (void)device;
 
-    fprintf(stdout, "INFO: Input device removed.\n");
+    fprintf(stdout, "river_input_device_handle_removed\n");
     struct RiverInputDevice *rdevice = data;
 
     river_input_device_v1_destroy(rdevice->device);
@@ -36,7 +36,7 @@ void river_input_device_handle_type(void *data,
                                     uint32_t type) {
     (void)device;
 
-    fprintf(stdout, "INFO: Input device type: %u.\n", type);
+    fprintf(stdout, "river_input_device_handle_type: %u\n", type);
 
     struct RiverInputDevice *rdevice = data;
     rdevice->type = type;
@@ -47,7 +47,7 @@ void river_input_device_handle_name(void *data,
                                     const char *name) {
     (void)device;
 
-    fprintf(stdout, "INFO: Input device name: %s.\n", name);
+    fprintf(stdout, "river_input_device_handle_name: %s\n", name);
 
     struct RiverInputDevice *rdevice = data;
     rdevice->name = strdup(name);
@@ -58,7 +58,7 @@ void river_input_device_handle_done(void *data,
     (void)data;
     (void)device;
 
-    fprintf(stdout, "INFO: Input device done.\n");
+    fprintf(stdout, "river_input_device_handle_done\n");
 }
 
 void river_input_manager_handle_finished(
@@ -66,7 +66,7 @@ void river_input_manager_handle_finished(
     (void)data;
     (void)input_manager;
 
-    fprintf(stdout, "INFO: Input manager finished\n");
+    fprintf(stdout, "river_input_manager_handle_finished\n");
 }
 
 void river_input_manager_handle_input_device(
@@ -74,17 +74,13 @@ void river_input_manager_handle_input_device(
     struct river_input_device_v1 *input_device) {
     (void)input_manager;
 
-    fprintf(stdout, "INFO: New input device.\n");
+    fprintf(stdout, "river_input_manager_handle_input_device\n");
 
-    fprintf(stdout, "INFO: Configuring input device.\n");
     if (input_config.repeat_rate > 0 && input_config.repeat_delay > 0) {
-        fprintf(stdout, "INFO: Repeat Rate: %u - Repeat delay: %u.\n",
-                input_config.repeat_rate, input_config.repeat_delay);
         river_input_device_v1_set_repeat_info(
             input_device, input_config.repeat_rate, input_config.repeat_delay);
     }
 
-    fprintf(stdout, "INFO: Adding listener to input device.\n");
     river_input_device_v1_add_listener(input_device,
                                        &river_input_device_listener, data);
 }

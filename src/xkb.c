@@ -25,6 +25,8 @@ const struct river_xkb_config_v1_listener river_xkb_config_listener = {
 // credit to https://codeberg.org/auoggi/anvl
 static struct river_xkb_keymap_v1 *
 create_keymap(struct river_xkb_config_v1 *config) {
+    fprintf(stdout, "create_keymap\n");
+
     struct xkb_rule_names keymap_rule_names = {0};
     keymap_rule_names.layout = strdup(xkb_config.layout);
     keymap_rule_names.variant = strdup(xkb_config.variant);
@@ -86,8 +88,8 @@ void river_xkb_config_handle_xkb_keyboard(void *data,
                                           struct river_xkb_keyboard_v1 *id) {
     (void)data;
 
-    fprintf(stdout, "INFO: New xkb_keyboard.\n");
-    fprintf(stdout, "INFO: Setting keymap.\n");
+    fprintf(stdout, "river_xkb_config_handle_xkb_keyboard\n");
+
     struct river_xkb_keymap_v1 *keymap = create_keymap(config);
     if (keymap == NULL) {
         fprintf(stderr, "ERROR: Failed to create keymap.\n");
@@ -101,11 +103,13 @@ void river_xkb_config_handle_finished(void *data,
     (void)data;
     (void)config;
 
-    fprintf(stdout, "INFO: Config finished.\n");
+    fprintf(stdout, "river_xkb_config_handle_finished\n");
 }
 
 void xkb_binding_handle_pressed(void *data, struct river_xkb_binding_v1 *obj) {
     (void)obj;
+
+    fprintf(stdout, "xkb_binding_handle_pressed\n");
 
     struct XkbBinding *binding = data;
     binding->seat->pending_action = binding->action;
@@ -121,6 +125,8 @@ const struct river_xkb_binding_v1_listener river_xkb_binding_listener = {
 };
 
 void xkb_binding_destroy(struct XkbBinding *binding) {
+    fprintf(stdout, "xkb_binding_destroy\n");
+
     river_xkb_binding_v1_destroy(binding->obj);
     free(binding->cmd);
     wl_list_remove(&binding->link);
@@ -129,6 +135,8 @@ void xkb_binding_destroy(struct XkbBinding *binding) {
 
 void xkb_binding_create(struct Seat *seat, uint32_t mods, xkb_keysym_t keysym,
                         enum Action action, char *cmd) {
+    fprintf(stdout, "xkb_binding_create\n");
+
     struct XkbBinding *binding = calloc(1, sizeof(struct XkbBinding));
     binding->obj = river_xkb_bindings_v1_get_xkb_binding(
         xkb_bindings_v1, seat->obj, keysym, mods);

@@ -23,6 +23,8 @@ const char *config_path = NULL;
 
 // open a lua table, just for slighly cleaner code
 int get_lua_table_by_name(lua_State *state, const char *name) {
+    fprintf(stdout, "get_lua_table_by_name\n");
+
     lua_getglobal(state, name);
     if (!lua_istable(state, -1)) {
         return 1;
@@ -32,6 +34,8 @@ int get_lua_table_by_name(lua_State *state, const char *name) {
 
 // add home + str to tmp buf
 void homeify(char **tmp_buf, char *home, char *after_home) {
+    fprintf(stdout, "homeify\n");
+
     size_t home_sz = strlen(home);
     size_t af_sz = strlen(after_home);
 
@@ -42,6 +46,8 @@ void homeify(char **tmp_buf, char *home, char *after_home) {
 
 // mods mousebutton action
 int parse_and_add_pointerbind(const char *pointer_str, struct Seat *seat) {
+    fprintf(stdout, "parse_and_add_pointerbind\n");
+
     // pre-alloc that array
     size_t len = strlen(pointer_str);
 
@@ -54,19 +60,19 @@ int parse_and_add_pointerbind(const char *pointer_str, struct Seat *seat) {
     // get mod str
     char *mods = strtok_r(buf, " ", &saveptr1);
     if (!mods) {
-        fprintf(stderr, "ERROR: missing modifiers.\n");
+        fprintf(stderr, "err: missing modifiers.\n");
         return 1;
     }
 
     char *mb = strtok_r(NULL, " ", &saveptr1);
     if (!mb) {
-        fprintf(stderr, "ERROR: missing mouse button.\n");
+        fprintf(stderr, "err: missing mouse button.\n");
         return 1;
     }
 
     char *action = strtok_r(NULL, " ", &saveptr1);
     if (!action) {
-        fprintf(stderr, "ERROR: missing action.\n");
+        fprintf(stderr, "err: missing action.\n");
         return 3;
     }
 
@@ -84,8 +90,7 @@ int parse_and_add_pointerbind(const char *pointer_str, struct Seat *seat) {
         } else if (strcmp(mod_tok, "shift") == 0) {
             mods_local |= RIVER_SEAT_V1_MODIFIERS_SHIFT;
         } else {
-            fprintf(stderr, "EXTREME WARNING: no modifer selected, you "
-                            "probably DON'T want that.\n");
+            fprintf(stderr, "warn: no modifer selected\n");
         }
         mod_tok = strtok_r(NULL, "+", &saveptr2);
     }
@@ -96,7 +101,7 @@ int parse_and_add_pointerbind(const char *pointer_str, struct Seat *seat) {
     } else if (strcmp(mb, "right_click") == 0) {
         button = BTN_RIGHT;
     } else {
-        fprintf(stderr, "ERROR: invalid button\n");
+        fprintf(stderr, "err: invalid button\n");
     }
 
     if (strcmp(action, "move") == 0) {
@@ -104,7 +109,7 @@ int parse_and_add_pointerbind(const char *pointer_str, struct Seat *seat) {
     } else if (strcmp(action, "resize") == 0) {
         pointer_binding_create(seat, mods_local, button, ACTION_RESIZE);
     } else {
-        fprintf(stderr, "ERROR: unknown action.\n");
+        fprintf(stderr, "err: unknown action.\n");
         return 1;
     }
 
@@ -119,6 +124,8 @@ int parse_and_add_pointerbind(const char *pointer_str, struct Seat *seat) {
 // char. Therefore, pre-allocate memory via array and operate in that array, and
 // just destroy the array
 int parse_and_add_keybind(const char *keybind_str, struct Seat *seat) {
+    fprintf(stdout, "parse_and_add_keybind\n");
+
     // pre-alloc that array
     size_t len = strlen(keybind_str);
 
@@ -131,21 +138,21 @@ int parse_and_add_keybind(const char *keybind_str, struct Seat *seat) {
     // get mod str
     char *mods = strtok_r(buf, " ", &saveptr1);
     if (!mods) {
-        fprintf(stderr, "ERROR: missing modifiers.\n");
+        fprintf(stderr, "err: missing modifiers.\n");
         return 1;
     }
 
     // get key str
     char *key = strtok_r(NULL, " ", &saveptr1);
     if (!key) {
-        fprintf(stderr, "ERROR: missing key.\n");
+        fprintf(stderr, "err: missing key.\n");
         return 2;
     }
 
     // get action str
     char *action = strtok_r(NULL, " ", &saveptr1);
     if (!action) {
-        fprintf(stderr, "ERROR: missing action.\n");
+        fprintf(stderr, "err: missing action.\n");
         return 3;
     }
 
@@ -186,8 +193,7 @@ int parse_and_add_keybind(const char *keybind_str, struct Seat *seat) {
         } else if (strcmp(mod_tok, "shift") == 0) {
             mods_local |= RIVER_SEAT_V1_MODIFIERS_SHIFT;
         } else {
-            fprintf(stderr, "EXTREME WARNING: no modifer selected, you "
-                            "probably DON'T want that.\n");
+            fprintf(stderr, "warn: no modifer selected\n");
         }
         mod_tok = strtok_r(NULL, "+", &saveptr2);
     }
@@ -195,7 +201,7 @@ int parse_and_add_keybind(const char *keybind_str, struct Seat *seat) {
     // check the action to decide what to do
     if (strcmp(action, "spawn") == 0) {
         if (final_cmd_len == 0) {
-            fprintf(stderr, "ERROR: missing command.\n");
+            fprintf(stderr, "err: missing command.\n");
             return 4;
         }
 
@@ -251,7 +257,7 @@ int parse_and_add_keybind(const char *keybind_str, struct Seat *seat) {
             ACTION_WIN_TAG_DEC, NULL);
     } else if (strcmp(action, "tag") == 0) {
         if (final_cmd_len == 0) {
-            fprintf(stderr, "ERROR: Missing tag id.\n");
+            fprintf(stderr, "err: Missing tag id.\n");
             return 4;
         }
 
@@ -261,7 +267,7 @@ int parse_and_add_keybind(const char *keybind_str, struct Seat *seat) {
             ACTION_TAG_SET, strdup(final_cmd_buf));
     } else if (strcmp(action, "win_tag") == 0) {
         if (final_cmd_len == 0) {
-            fprintf(stderr, "ERROR: Missing tag id.\n");
+            fprintf(stderr, "err: Missing tag id.\n");
             return 4;
         }
 
@@ -280,7 +286,7 @@ int parse_and_add_keybind(const char *keybind_str, struct Seat *seat) {
             xkb_keysym_from_name(key, XKB_KEYSYM_CASE_INSENSITIVE),
             ACTION_FOCUS_MON_PREV, NULL);
     } else {
-        fprintf(stderr, "ERROR: unknown action.\n");
+        fprintf(stderr, "err: unknown action.\n");
         return 1;
     }
 
@@ -288,11 +294,13 @@ int parse_and_add_keybind(const char *keybind_str, struct Seat *seat) {
 }
 
 lua_State *lua_open_table(const char *config_path, const char *table_name) {
+    fprintf(stdout, "lua_open_table\n");
+
     lua_State *L = luaL_newstate();
     luaL_openlibs(L);
 
     if (luaL_dofile(L, config_path) != LUA_OK) {
-        fprintf(stderr, "ERROR: Lua failed to load '%s': %s\n", config_path,
+        fprintf(stderr, "err: Lua failed to load '%s': %s\n", config_path,
                 lua_tostring(L, -1));
         lua_close(L);
         return NULL;
@@ -300,7 +308,7 @@ lua_State *lua_open_table(const char *config_path, const char *table_name) {
 
     lua_getglobal(L, table_name);
     if (!lua_istable(L, -1)) {
-        fprintf(stderr, "ERROR: '%s' is not a table in '%s'\n", table_name,
+        fprintf(stderr, "err: '%s' is not a table in '%s'\n", table_name,
                 config_path);
         lua_close(L);
         return NULL;
@@ -311,6 +319,8 @@ lua_State *lua_open_table(const char *config_path, const char *table_name) {
 
 int get_int_from_var_from_table(const char *config_path, const char *table_name,
                                 const char *var_name) {
+    fprintf(stdout, "get_int_from_var_from_table\n");
+
     lua_State *L;
     if ((L = lua_open_table(config_path, table_name)) == NULL) {
         return 0;
@@ -333,6 +343,8 @@ int get_int_from_var_from_table(const char *config_path, const char *table_name,
 bool get_bool_from_var_from_table(const char *config_path,
                                   const char *table_name,
                                   const char *var_name) {
+    fprintf(stdout, "get_bool_from_var_from_table\n");
+
     lua_State *L;
     if ((L = lua_open_table(config_path, table_name)) == NULL) {
         return NULL;
@@ -355,6 +367,8 @@ bool get_bool_from_var_from_table(const char *config_path,
 char *get_string_from_var_from_table(const char *config_path,
                                      const char *table_name,
                                      const char *var_name) {
+    fprintf(stdout, "get_string_from_var_from_table\n");
+
     lua_State *L;
     if ((L = lua_open_table(config_path, table_name)) == NULL) {
         return NULL;
@@ -384,6 +398,8 @@ char *get_string_from_var_from_table(const char *config_path,
 char **get_list_of_strings_from_lua_table(const char *config_path,
                                           size_t *len_return,
                                           const char *table_name) {
+    fprintf(stdout, "get_list_of_strings_from_lua_table\n");
+
     lua_State *L;
     if ((L = lua_open_table(config_path, table_name)) == NULL) {
         return NULL;
@@ -399,7 +415,7 @@ char **get_list_of_strings_from_lua_table(const char *config_path,
         lua_rawgeti(L, -1, i);
 
         if (!lua_isstring(L, -1)) {
-            fprintf(stderr, "ERROR: failed to read '%s' section.\n",
+            fprintf(stderr, "err: failed to read '%s' section.\n",
                     table_name);
             lua_pop(L, 1);
             for (size_t j = 0; j < used; j++)
@@ -421,6 +437,8 @@ char **get_list_of_strings_from_lua_table(const char *config_path,
 
 // locate the config file
 char *locate_config(void) {
+    fprintf(stdout, "locate_config\n");
+
     // we will add home later.
     char *config_locations[] = {
         ".config/taiga/taigarc.lua",
@@ -468,7 +486,7 @@ char *locate_config(void) {
         }
     }
 
-    fprintf(stdout, "INFO: trying to load fallback config ./taigarc.lua\n");
+    fprintf(stdout, "loading fallback config: ./taigarc.lua\n");
 
     // get cwd and prepend it to file name
     char cwd[1024];
@@ -489,9 +507,11 @@ char *locate_config(void) {
 }
 
 int load_config(void) {
+    fprintf(stdout, "load_config\n");
+
     config_path = locate_config();
     if (config_path == NULL) {
-        fprintf(stderr, "ERROR: failed to open a config file.");
+        fprintf(stderr, "err: failed to open a config file.");
         return 1;
     }
 

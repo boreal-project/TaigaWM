@@ -44,7 +44,7 @@ void wm_handle_unavailable(void *data, struct river_window_manager_v1 *obj) {
     (void)data;
     (void)obj;
 
-    fprintf(stderr, "ERROR: Another window manager is already running\n");
+    fprintf(stderr, "err: Another window manager is already running\n");
     exit(1);
 }
 
@@ -52,12 +52,16 @@ void wm_handle_finished(void *data, struct river_window_manager_v1 *obj) {
     (void)data;
     (void)obj;
 
+    fprintf(stdout, "wm_handle_finished\n");
+
     exit(0);
 }
 
 void wm_handle_manage_start(void *data, struct river_window_manager_v1 *obj) {
     (void)data;
     (void)obj;
+
+    fprintf(stdout, "wm_handle_manage_start\n");
 
     // Destroy closed windows and removed outputs/seats
     struct Output *output, *output_tmp;
@@ -83,6 +87,8 @@ void wm_handle_render_start(void *data, struct river_window_manager_v1 *obj) {
     (void)data;
     (void)obj;
 
+    fprintf(stdout, "wm_handle_render_start\n");
+
     struct Seat *seat;
     wl_list_for_each(seat, &wm.seats, link) { seat_render(seat); }
 
@@ -93,6 +99,8 @@ void wm_handle_window(void *data, struct river_window_manager_v1 *obj,
                       struct river_window_v1 *river_window) {
     (void)data;
     (void)obj;
+
+    fprintf(stdout, "wm_handle_window\n");
 
     struct Window *window = calloc(1, sizeof(struct Window));
     window->obj = river_window;
@@ -108,6 +116,8 @@ void wm_handle_output(void *data, struct river_window_manager_v1 *obj,
                       struct river_output_v1 *river_output) {
     (void)data;
     (void)obj;
+
+    fprintf(stdout, "wm_handle_output\n");
 
     struct Output *output = calloc(1, sizeof(struct Output));
     output->obj = river_output;
@@ -125,10 +135,8 @@ void wm_handle_output(void *data, struct river_window_manager_v1 *obj,
     }
 
     if (misc_config.tearing) {
-        fprintf(stdout, "INFO: tearing enabled.\n");
         river_output_v1_set_presentation_mode(output->obj, 1);
     } else {
-        fprintf(stdout, "INFO: tearing disabled.\n");
         river_output_v1_set_presentation_mode(output->obj, 0);
     }
 
@@ -140,6 +148,8 @@ void wm_handle_seat(void *data, struct river_window_manager_v1 *obj,
                     struct river_seat_v1 *river_seat) {
     (void)data;
     (void)obj;
+
+    fprintf(stdout, "wm_handle_seat\n");
 
     struct Seat *seat = calloc(1, sizeof(struct Seat));
     seat->obj = river_seat;
@@ -162,6 +172,8 @@ void wm_handle_session_unlocked(void *data,
                                 struct river_window_manager_v1 *obj) {}
 
 void wm_init(void) {
+    fprintf(stdout, "wm_init\n");
+
     wl_list_init(&wm.outputs);
     wl_list_init(&wm.windows);
     wl_list_init(&wm.seats);
@@ -170,6 +182,8 @@ void wm_init(void) {
 
 void handle_global(void *data, struct wl_registry *registry, uint32_t name,
                    const char *interface, uint32_t version) {
+    fprintf(stdout, "handle_global\n");
+
     if (strcmp(interface, river_window_manager_v1_interface.name) == 0) {
         if (version >= 4) {
             window_manager_v1 = wl_registry_bind(
