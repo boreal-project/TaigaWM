@@ -2,7 +2,7 @@
 
 pkgs.mkShell {
     nativeBuildInputs = with pkgs; [
-        clang
+        clang-tools
         pkg-config
         wayland-scanner
         bear
