@@ -1,6 +1,6 @@
 # TaigaWM
 
-A small, floating window manager written in C for river.
+A small, floating window manager written in C++ for river.
 
 Used primarily in the borealOS project.
 
