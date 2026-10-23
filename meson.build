@@ -3,20 +3,20 @@
 
 project(
   'taiga',
-  'c',
+  ['c', 'cpp'],
   meson_version: '>= 1.8.0',
   version: '0.1',
   default_options: [
     'warning_level=3',
+    'buildtype=debugoptimized',
+    'cpp_std=c++20',
   ],
 )
 
-cc = meson.get_compiler('c')
-add_project_arguments(cc.get_supported_arguments([
-  '-D_POSIX_C_SOURCE=200809L',
-	'-Wno-unused-parameter',
-        '-O2',
-]), language: 'c')
+cxx = meson.get_compiler('cpp')
+add_project_arguments(cxx.get_supported_arguments([
+  '-Wno-unused-parameter',
+]), language: 'cpp')
 
 wayland_client = dependency('wayland-client')
 xkbcommon = dependency('xkbcommon')
@@ -68,18 +68,19 @@ install_data(
 
 exe = executable(
   'taiga',
-  'src/main.c',
-  'src/output.c',
-  'src/window.c',
-  'src/xkb.c',
-  'src/pointer.c',
-  'src/seat.c',
-  'src/wm.c',
-  'src/layer_shell.c',
-  'src/config.c',
-  'src/libinput.c',
-  'src/autostart.c',
-  'src/input.c',
+  'src/main.cpp',
+  'src/util.cpp',
+  'src/output.cpp',
+  'src/window.cpp',
+  'src/xkb.cpp',
+  'src/pointer.cpp',
+  'src/seat.cpp',
+  'src/wm.cpp',
+  'src/layer_shell.cpp',
+  'src/config.cpp',
+  'src/libinput.cpp',
+  'src/autostart.cpp',
+  'src/input.cpp',
   generated,
   dependencies: [
     wayland_client,
